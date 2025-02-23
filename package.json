@@ -1,0 +1,53 @@
+{
+  "name": "lofi-electron",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron . --disable-gpu --no-sandbox --disable-software-rasterizer --use-gl=desktop",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "dependencies": {
+    "fix-path": "^4.0.0"
+  },
+  "devDependencies": {
+    "electron": "^34.2.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.lofi.radio",
+    "productName": "Lofi Radio",
+    "linux": {
+      "target": "AppImage",
+      "category": "Music",
+      "executableArgs": [
+        "--disable-gpu",
+        "--no-sandbox",
+        "--disable-software-rasterizer",
+        "--use-gl=desktop"
+      ]
+    },
+    "mac": {
+      "category": "public.app-category.music",
+      "forceCodeSigning": false
+    },
+    "win": {
+      "target": "nsis",
+      "signingHashAlgorithms": ["sha256"]
+    },
+    "extraResources": [
+      {
+        "from": "assets/",
+        "to": "resources/",
+        "filter": ["**/*"]
+      }
+    ],
+    "extraFiles": [
+      {
+        "from": "scripts/start.sh",
+        "to": "",
+        "filter": ["**/*"]
+      }
+    ]
+  }
+}

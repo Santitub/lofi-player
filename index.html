@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lofi Radio Player</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: #fff;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .title-bar {
+            -webkit-app-region: drag;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .window-controls {
+            -webkit-app-region: no-drag;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .window-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+        }
+
+        .window-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .close-btn:hover {
+            background: #ff5f56 !important;
+        }
+
+        .minimize-btn:hover {
+            background: #ffbd2e !important;
+        }
+
+        .maximize-btn:hover {
+            background: #28c940 !important;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            padding: 30px;
+            gap: 30px;
+        }
+
+        .visualizer-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .visualizer-container {
+            position: relative;
+            width: 250px;
+            height: 250px;
+            border-radius: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(5px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .equalizer-bars {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 50%;
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            padding: 10px;
+        }
+
+        .bar {
+            width: 8%;
+            background: #4b6cb7;
+            border-radius: 3px 3px 0 0;
+            animation: equalizer 1.4s infinite ease-in-out;
+        }
+
+        @keyframes equalizer {
+            0%, 100% { height: 30%; }
+            50% { height: 80%; }
+        }
+
+        .controls-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 25px;
+        }
+
+        .track-info {
+            text-align: center;
+        }
+
+        .track-title {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+
+        .track-artist {
+            color: #888;
+            font-size: 1.1em;
+            min-height: 1.5em;
+        }
+
+        .player-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .controls-row {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .control-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 80%;
+        }
+
+        .volume-slider {
+            width: 100%;
+            height: 4px;
+            -webkit-appearance: none;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 15px;
+            height: 15px;
+            background: #4b6cb7;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .playlist-section {
+            margin-top: 20px;
+            width: 100%;
+            max-height: 200px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        .playlist-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding: 0 10px;
+        }
+
+        .playlist-title {
+            font-size: 1.1em;
+            color: #4b6cb7;
+        }
+
+        .playlist-count {
+            color: #666;
+        }
+
+        .playlist-item {
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            margin-bottom: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .playlist-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .playlist-item.active {
+            background: #4b6cb755;
+            border-left: 4px solid #4b6cb7;
+        }
+    </style>
+</head>
+<body>
+    <div class="title-bar">
+        <div class="window-controls">
+            <button class="window-btn minimize-btn" onclick="windowControl('minimize')">
+                <i class="fas fa-minus"></i>
+            </button>
+            <button class="window-btn maximize-btn" onclick="windowControl('maximize')">
+                <i class="fas fa-square"></i>
+            </button>
+            <button class="window-btn close-btn" onclick="windowControl('close')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="visualizer-section">
+            <div class="visualizer-container">
+                <div class="equalizer-bars">
+                    <div class="bar" style="animation-delay: 0s"></div>
+                    <div class="bar" style="animation-delay: 0.2s"></div>
+                    <div class="bar" style="animation-delay: 0.4s"></div>
+                    <div class="bar" style="animation-delay: 0.6s"></div>
+                    <div class="bar" style="animation-delay: 0.8s"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls-section">
+            <div class="track-info">
+                <h1 class="track-title" id="currentSongTitle">Lofi Radio</h1>
+                <p class="track-artist" id="currentSongArtist"></p>
+            </div>
+
+            <div class="player-controls">
+                <div class="controls-row">
+                    <button class="control-btn" id="prevBtn">
+                        <i class="fas fa-step-backward"></i>
+                    </button>
+                    <button class="control-btn" id="playPauseBtn">
+                        <i class="fas fa-play"></i>
+                    </button>
+                    <button class="control-btn" id="nextBtn">
+                        <i class="fas fa-step-forward"></i>
+                    </button>
+                </div>
+                
+                <div class="volume-control">
+                    <i class="fas fa-volume-up"></i>
+                    <input type="range" class="volume-slider" min="0" max="100" value="50">
+                </div>
+            </div>
+
+            <div class="playlist-section">
+                <div class="playlist-header">
+                    <span class="playlist-title">LOFI RADIO PLAYLIST</span>
+                    <span class="playlist-count"><span id="currentTrack">1</span>/10</span>
+                </div>
+                <div id="playlistContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="player"></div>
+
+    <script>
+        const { ipcRenderer } = require('electron')
+        const playlist = [
+            { id: 'P6Segk8cr-c', title: 'sad lofi radio ☔', artist: 'beats for rainy days' },
+            { id: '1oDrJba2PSs', title: 'Study With Me 📚', artist: 'Pomodoro Session 50/10' },
+            { id: 'HuFYqnbVbzY', title: 'jazz lofi radio 🎷', artist: 'beats to chill/study to' },
+            { id: '-OekvEFm1lo', title: 'Gentle Rain Sounds 🌧️', artist: 'natural white noise' },
+            { id: '28KRPhVzCus', title: 'lofi hip hop radio 💤', artist: 'beats to sleep/chill to' },
+            { id: 'TtkFsfOP9QI', title: 'peaceful piano radio 🎹', artist: 'music to focus/study to' },
+            { id: 'Na0w3Mz46GA', title: 'asian lofi radio ⛩️', artist: 'beats to relax/study to' },
+            { id: 'S_MOd40zlYU', title: 'dark ambient radio 🌃', artist: 'music to escape/dream to' },
+            { id: '4xDzrJKXOOY', title: 'synthwave radio 🌌', artist: 'beats to chill/game to' },
+            { id: 'jfKfPfyJRdk', title: 'lofi hip hop radio 📚', artist: 'beats to relax/study to' }
+        ]
+
+        let currentTrackIndex = 0
+        let isPlaying = false
+        let player
+
+        function windowControl(action) {
+            ipcRenderer.send('window-control', action)
+        }
+
+        function generatePlaylist() {
+            const container = document.getElementById('playlistContainer')
+            container.innerHTML = playlist.map((song, index) => `
+                <div class="playlist-item ${index === 0 ? 'active' : ''}" 
+                     data-index="${index}" 
+                     onclick="changeTrack(${index})">
+                    ${index + 1}. ${song.title}
+                </div>
+            `).join('')
+        }
+
+        function changeTrack(index) {
+            currentTrackIndex = index
+            updatePlaylistUI()
+            
+            const currentSong = playlist[index]
+            document.getElementById('currentSongTitle').textContent = currentSong.title
+            document.getElementById('currentSongArtist').textContent = currentSong.artist
+            
+            player.loadVideoById(currentSong.id)
+            if(isPlaying) player.playVideo()
+        }
+
+        function updatePlaylistUI() {
+            document.querySelectorAll('.playlist-item').forEach(item => {
+                item.classList.remove('active')
+            })
+            document.querySelector(`[data-index="${currentTrackIndex}"]`).classList.add('active')
+            document.getElementById('currentTrack').textContent = currentTrackIndex + 1
+        }
+
+        // Controladores de eventos
+        document.getElementById('playPauseBtn').addEventListener('click', togglePlay)
+        document.getElementById('nextBtn').addEventListener('click', nextTrack)
+        document.getElementById('prevBtn').addEventListener('click', prevTrack)
+        document.querySelector('.volume-slider').addEventListener('input', updateVolume)
+
+        function togglePlay() {
+            if (!player) return
+            if (isPlaying) {
+                player.pauseVideo()
+            } else {
+                player.playVideo()
+            }
+        }
+
+        function nextTrack() {
+            currentTrackIndex = (currentTrackIndex + 1) % playlist.length
+            changeTrack(currentTrackIndex)
+        }
+
+        function prevTrack() {
+            currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length
+            changeTrack(currentTrackIndex)
+        }
+
+        function updateVolume(e) {
+            player.setVolume(e.target.value)
+        }
+
+        // YouTube Player API
+        const tag = document.createElement('script')
+        tag.src = "https://www.youtube.com/iframe_api"
+        document.head.appendChild(tag)
+
+        window.onYouTubeIframeAPIReady = function() {
+            player = new YT.Player('player', {
+                height: '0',
+                width: '0',
+                videoId: playlist[0].id,
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            })
+        }
+
+        function onPlayerReady(event) {
+            const firstSong = playlist[0]
+            document.getElementById('currentSongTitle').textContent = firstSong.title
+            document.getElementById('currentSongArtist').textContent = firstSong.artist
+            event.target.setVolume(50)
+            document.body.addEventListener('click', firstPlay)
+        }
+
+        function firstPlay() {
+            if (!isPlaying) {
+                player.playVideo()
+                isPlaying = true
+                document.getElementById('playPauseBtn').querySelector('i').className = 'fas fa-pause'
+            }
+            document.body.removeEventListener('click', firstPlay)
+        }
+
+        function onPlayerStateChange(event) {
+            if (event.data === YT.PlayerState.PLAYING) {
+                isPlaying = true
+                document.getElementById('playPauseBtn').querySelector('i').className = 'fas fa-pause'
+            }
+            if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
+                isPlaying = false
+                document.getElementById('playPauseBtn').querySelector('i').className = 'fas fa-play'
+            }
+            
+            if (event.data === YT.PlayerState.ENDED) {
+                nextTrack()
+            }
+        }
+
+        // Inicialización
+        generatePlaylist()
+
+        // Control de maximizar
+        ipcRenderer.on('window-maximized', (event, isMaximized) => {
+            const maximizeIcon = document.querySelector('.maximize-btn i')
+            maximizeIcon.className = isMaximized ? 'fas fa-clone' : 'fas fa-square'
+        })
+
+        // Animación del ecualizador
+        document.querySelectorAll('.bar').forEach((bar, index) => {
+            bar.style.animationDelay = `${index * 0.1}s`
+        })
+    </script>
+</body>
+</html>
