@@ -18,7 +18,7 @@ Lofi Player es una aplicación de escritorio desarrollada con **Electron**, dise
 
 ### Opción 1: Descargar desde los releases de GitHub
 
-Puedes descargar la versión más reciente del programa directamente desde la sección de [Releases](https://github.com/tu-usuario/lofi-player/releases) de este repositorio. Simplemente selecciona el archivo correspondiente a tu sistema operativo y sigue las instrucciones de instalación.
+Puedes descargar la versión más reciente del programa directamente desde la sección de [Releases](https://github.com/Santitub/lofi-player/releases) de este repositorio. Simplemente selecciona el archivo correspondiente a tu sistema operativo y sigue las instrucciones de instalación.
 
 ### Opción 2: Clonación del repositorio
 
@@ -27,7 +27,7 @@ Si prefieres compilarlo tú mismo, primero clona el repositorio a tu máquina lo
 1. Clona el repositorio:
 
     ```bash
-    git clone https://github.com/tu-usuario/lofi-player.git
+    git clone https://github.com/Santitub/lofi-player.git
     ```
 
 2. Navega a la carpeta del proyecto:
