@@ -44,16 +44,13 @@ Si prefieres compilarlo tú mismo, primero clona el repositorio a tu máquina lo
     npm install
     ```
 
-### Ejecutando la aplicación
+### Compilación de la aplicación
 
-1. Para iniciar la aplicación, ejecuta:
+Para compilar la aplicación en una versión lista para distribución, ejecuta el siguiente comando:
 
-    ```bash
-    npm start
-    ```
-
-La aplicación se abrirá y podrás comenzar a escuchar tus emisoras de Lofi Radio favoritas.
-
+```bash
+npm run dist
+```
 ## Licencia
 
 Este proyecto está bajo la **Licencia Pública General GNU v3.0 (GPL-3.0)**. Esto significa que puedes usar, modificar y distribuir el software bajo los términos de esta licencia.
